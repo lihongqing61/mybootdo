@@ -3,3 +3,6 @@ server:
 spring:
   profiles:
     active: dev
+  thymeleaf:
+    mode: LEGACYHTML5       # 模板模式
+    cache: false           # 禁用html缓存
