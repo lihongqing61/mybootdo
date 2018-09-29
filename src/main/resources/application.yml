@@ -6,3 +6,9 @@ spring:
   thymeleaf:
     mode: LEGACYHTML5       # 模板模式
     cache: false           # 禁用html缓存
+
+mybatis:
+  type-aliases-package: com.bootdo.**.domain    # mybatis短名
+  mapper-locations: mybatis/**/*Mapper.xml      # 扫描mapper文件
+  configuration:
+    map-underscore-to-camel-case: true        # 支持下划线转驼峰
