@@ -7,10 +7,8 @@ import com.bootdo.system.domain.MenuDO;
 import com.bootdo.system.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * Created by Lihq on 2018/9/29 14:14
@@ -42,5 +40,13 @@ public class MenuServiceImpl implements MenuService {
             treeList.add(tree);
         }
         return BuildTree.buildList(treeList, "0");
+    }
+
+    @Override
+    public Set<String> listUserPerms(Long userId) {
+        // TODO:
+        List<String> permsList = menuDao.listUserPerms(userId);
+
+        return null;
     }
 }

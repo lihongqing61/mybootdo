@@ -4,6 +4,7 @@ import com.bootdo.common.controller.BaseController;
 import com.bootdo.common.utils.PageUtils;
 import com.bootdo.common.utils.Query;
 import com.bootdo.system.service.UserService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,7 @@ public class UserController extends BaseController {
      */
     @GetMapping("/list")
     @ResponseBody
+    @RequiresPermissions("sys:user:list")
     public PageUtils list(@RequestParam Map<String, Object> paramMap) {
         Query query = new Query(paramMap);
         return userService.list(query);

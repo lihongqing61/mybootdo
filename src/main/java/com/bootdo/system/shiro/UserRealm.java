@@ -1,13 +1,18 @@
 package com.bootdo.system.shiro;
 
+import com.bootdo.common.utils.ShiroUtils;
 import com.bootdo.system.dao.UserDao;
 import com.bootdo.system.domain.UserDO;
+import com.bootdo.system.service.MenuService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+
+import java.util.Set;
 
 /**
  * Created by Lihq on 2018/9/29 10:13
@@ -17,6 +22,9 @@ public class UserRealm extends AuthorizingRealm {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private MenuService menuService;
     /**
      * 登录认证
      * @return
@@ -56,10 +64,9 @@ public class UserRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        boolean ret = principalCollection.isEmpty();
-
-        return null;
+        Set<String> userPermSet = menuService.listUserPerms(ShiroUtils.getUserId());
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        info.setStringPermissions(userPermSet);
+        return info;
     }
-
-
 }

@@ -11,4 +11,6 @@ import java.util.List;
 public interface MenuDao {
 
     List<MenuDO> listMenuByUserId(Long userId);
+
+    List<String> listUserPerms(Long userId);
 }

@@ -3,6 +3,7 @@ package com.bootdo.system.service;
 import com.bootdo.common.domain.Tree;
 import com.bootdo.system.domain.MenuDO;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Lihq on 2018/9/29 14:13
@@ -16,4 +17,6 @@ public interface MenuService {
      * @return
      */
     List<Tree<MenuDO>> listMenuTree(Long userId);
+
+    Set<String> listUserPerms(Long userId);
 }
