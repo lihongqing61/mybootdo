@@ -56,6 +56,8 @@ public class UserRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        boolean ret = principalCollection.isEmpty();
+
         return null;
     }
 
