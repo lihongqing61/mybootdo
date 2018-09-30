@@ -1,6 +1,8 @@
 package com.bootdo.system.dao;
 
+import com.bootdo.common.utils.Query;
 import com.bootdo.system.domain.UserDO;
+import java.util.List;
 
 /**
  * Created by Lihq on 2018/9/29 11:23
@@ -11,4 +13,8 @@ import com.bootdo.system.domain.UserDO;
 public interface UserDao {
 
     UserDO findUserByUsername(String username);
+
+    List<UserDO> list(Query query);
+
+    int count(Query query);
 }

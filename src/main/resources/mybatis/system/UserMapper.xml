@@ -3,10 +3,40 @@
 
 <mapper namespace="com.bootdo.system.dao.UserDao">
 
-	<select id="findUserByUsername" resultType="com.bootdo.system.domain.UserDO">
+	<select id="findUserByUsername" resultType="userDO">
 		select *
 		from sys_user
 		where username = #{value}
 	</select>
 
+    <sql id="list_where">
+        <where>
+            <if test="deptId != null and deptId != ''.toString()">
+                and dept_id = #{deptId}
+            </if>
+            <if test="name != null and name != ''.toString()">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </sql>
+    <select id="list" parameterType="com.bootdo.common.utils.Query" resultType="userDO">
+        select *
+        from sys_user
+        <include refid="list_where"></include>
+        <choose>
+            <when test="sort != null and sort != ''.toString()">
+                order by ${sort} ${order}
+            </when>
+            <otherwise>
+                order by user_id desc
+            </otherwise>
+        </choose>
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="count" parameterType="com.bootdo.common.utils.Query" resultType="int">
+        select count(*)
+        from sys_user
+        <include refid="list_where"></include>
+    </select>
 </mapper>
