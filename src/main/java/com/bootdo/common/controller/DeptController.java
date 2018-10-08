@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/system/sysDept")
 public class DeptController extends BaseController {
 
+    private String prefix = "system/dept";
+
     @Autowired
     private DeptService deptService;
 
@@ -29,5 +31,14 @@ public class DeptController extends BaseController {
     @ResponseBody
     public Tree<DeptDO> deptTreeList() {
         return deptService.deptTreeList();
+    }
+
+    /**
+     * 跳转到选择部门页面
+     * @return
+     */
+    @GetMapping("/treeView")
+    public String treeView() {
+        return  prefix + "/deptTree";
     }
 }

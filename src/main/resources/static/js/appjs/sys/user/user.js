@@ -39,34 +39,13 @@ function loadList(deptId) {
 			}
         },
         columns : [
-            {
-                checkbox : true
-            },
-            {
-                field : 'userId', // 列字段名
-                title : '序号' // 列标题
-            },
-            {
-                field : 'name',
-                title : '姓名'
-            },
-            {
-                field : 'username',
-                title : '用户名'
-            },
-            {
-                field : 'email',
-                title : '邮箱'
-            },
-            {
-                field : 'gmtCreate',
-                title : '注册时间'
-            },
-            {
-                field : 'status',
-                title : '状态',
-                align : 'center',
-                formatter : function(value, row, index) {
+            {checkbox : true},
+            {field : 'userId', title : '序号'},
+            {field : 'name', title : '姓名' },
+            {field : 'username', title : '用户名'},
+            {field : 'email', title : '邮箱'},
+            {field : 'gmtCreate', title : '注册时间'},
+            {field : 'status', title : '状态', align : 'center', formatter : function(value, row, index) {
                     if (value == '0') {
                         return '<span class="label label-danger">禁用</span>';
                     } else if (value == '1') {
@@ -74,11 +53,7 @@ function loadList(deptId) {
                     }
                 }
             },
-            {
-                title : '操作',
-                field : 'id',
-                align : 'center',
-                formatter : function(value, row, index) {
+            {title : '操作', field : 'id', align : 'center', formatter : function(value, row, index) {
                     var e = '<a  class="btn btn-primary btn-sm ' + s_edit_h + '" href="#" mce_href="#" title="编辑" onclick="edit(\''
                         + row.userId
                         + '\')"><i class="fa fa-edit "></i></a> ';
@@ -129,5 +104,20 @@ function loadTree(tree) {
 			opt = {query: {deptId: data.selected[0]}};
 		}
         $("#exampleTable").bootstrapTable("refresh", opt);
+    });
+
+}
+
+/**
+ * 用户新增
+ */
+function add() {
+    layer.open({
+        type: 2,    // layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）。 若你采用layer.open({type: 1})方式调用，则type为必填项（信息框除外）
+        title: '用户新增',
+     //   maxmin: true,   // 最大最小化
+        shadeClose: true,   // 点击遮罩关闭层
+        area : [ '800px', '520px' ],
+        content : prefix + '/add'
     });
 }

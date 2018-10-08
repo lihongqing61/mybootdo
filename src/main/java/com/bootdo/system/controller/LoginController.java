@@ -1,5 +1,6 @@
 package com.bootdo.system.controller;
 
+import com.bootdo.common.annonation.Log;
 import com.bootdo.common.controller.BaseController;
 import com.bootdo.common.domain.FileDO;
 import com.bootdo.common.domain.Tree;
@@ -64,6 +65,7 @@ public class LoginController extends BaseController {
      */
     @PostMapping("/login")
     @ResponseBody
+    @Log("用户登录")
     public R loginSubmit(@RequestParam(name = "username") String username,
                          @RequestParam(name = "password") String password) {
 
@@ -86,6 +88,7 @@ public class LoginController extends BaseController {
      */
 
     @GetMapping("/index")
+    @Log("请求访问主页")
     public String index(Model model) {
         // 查询用户菜单权限
         List<Tree<MenuDO>> menuList = menuService.listMenuTree(getUserId());

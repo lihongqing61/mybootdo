@@ -5,9 +5,9 @@ import com.bootdo.common.utils.BuildTree;
 import com.bootdo.system.dao.MenuDao;
 import com.bootdo.system.domain.MenuDO;
 import com.bootdo.system.service.MenuService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 /**
@@ -44,9 +44,15 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public Set<String> listUserPerms(Long userId) {
-        // TODO:
         List<String> permsList = menuDao.listUserPerms(userId);
 
-        return null;
+        Set<String> perms = new HashSet<>();
+
+        for (String perm : permsList) {
+            if (StringUtils.isNotBlank(perm)) {
+                perms.addAll(Arrays.asList(perm.trim().split(",")));
+            }
+        }
+        return perms;
     }
 }
