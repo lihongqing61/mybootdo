@@ -78,4 +78,9 @@ public class UserServiceImpl implements UserService {
         }
         return count;
     }
+
+    @Override
+    public UserDO findUserById(String id) {
+        return userDao.findUserById(id);
+    }
 }

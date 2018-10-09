@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface RoleService {
 
-    List<RoleDO> list();
+    List<RoleDO> list(String id);
 }

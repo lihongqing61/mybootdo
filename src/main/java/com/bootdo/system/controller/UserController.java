@@ -62,7 +62,7 @@ public class UserController extends BaseController {
      */
     @GetMapping("/add")
     public String toAddPage(Model model) {
-        List<RoleDO> roles = roleService.list();
+        List<RoleDO> roles = roleService.list(null);
         model.addAttribute("roles", roles);
         return prefix + "add";
     }
@@ -95,5 +95,21 @@ public class UserController extends BaseController {
         } else {
             return R.error();
         }
+    }
+
+    /**
+     * 跳转到编辑页面
+     * @return
+     */
+    @GetMapping("/edit/{id}")
+    public String toEditPage(Model model, @PathVariable(value = "id") String id) {
+
+        UserDO user = userService.findUserById(id);
+        model.addAttribute("user", user);
+
+        List<RoleDO> roles = roleService.list(id);
+
+        model.addAttribute("roles", roles);
+        return prefix + "edit";
     }
 }

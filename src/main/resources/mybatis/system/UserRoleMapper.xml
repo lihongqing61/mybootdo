@@ -10,10 +10,18 @@
     </delete>
 
     <insert id="batchSave">
-        INSERT INTO sys_user_role (user_id, role_id)
+        INSERT INTO
+        sys_user_role
+          (user_id, role_id)
         values
         <foreach item="item" index="index" collection="list" separator=",">
             (#{item.userId}, #{item.roleId})
         </foreach>
     </insert>
+
+    <select id="findRoleByUserId" parameterType="string" resultType="long">
+        select role_id
+        from sys_user_role
+        where user_id = #{val}
+    </select>
 </mapper>

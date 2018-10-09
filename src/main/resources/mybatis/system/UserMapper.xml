@@ -9,6 +9,12 @@
 		where username = #{value}
 	</select>
 
+    <select id="findUserById" parameterType="string" resultType="userDO">
+		select *
+		from sys_user
+		where user_id = #{value}
+	</select>
+
     <sql id="list_where">
         <where>
             <if test="deptId != null and deptId != ''.toString()">

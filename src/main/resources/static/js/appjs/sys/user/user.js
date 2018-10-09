@@ -121,3 +121,16 @@ function add() {
         content : prefix + '/add'
     });
 }
+
+/**
+ * 用户编辑
+ */
+function edit(id) {
+    layer.open({
+        type: 2,
+        title: "用户编辑",
+        shadeClose: true,
+        area : [ '800px', '520px' ],
+        content : prefix + '/edit/' + id
+    });
+}

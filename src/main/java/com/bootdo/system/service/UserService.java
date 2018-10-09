@@ -15,4 +15,6 @@ public interface UserService {
     boolean exit(String username);
 
     int save(UserDO user);
+
+    UserDO findUserById(String id);
 }

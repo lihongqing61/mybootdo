@@ -19,4 +19,6 @@ public interface UserDao {
     int count(Query query);
 
     int save(UserDO user);
+
+    UserDO findUserById(String id);
 }
