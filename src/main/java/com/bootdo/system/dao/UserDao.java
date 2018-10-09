@@ -17,4 +17,6 @@ public interface UserDao {
     List<UserDO> list(Query query);
 
     int count(Query query);
+
+    int save(UserDO user);
 }

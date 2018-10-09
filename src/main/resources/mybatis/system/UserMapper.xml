@@ -17,6 +17,9 @@
             <if test="name != null and name != ''.toString()">
                 and name like concat('%', #{name}, '%')
             </if>
+            <if test="username != null and username != ''.toString()">
+                and username = #{username}
+            </if>
         </where>
     </sql>
     <select id="list" parameterType="com.bootdo.common.utils.Query" resultType="userDO">
@@ -39,4 +42,17 @@
         from sys_user
         <include refid="list_where"></include>
     </select>
+
+    <insert id="save" parameterType="com.bootdo.system.domain.UserDO" useGeneratedKeys="true" keyProperty="userId">
+		insert into sys_user
+		(`username`, `name`, `password`, `dept_id`, `email`,
+		  `mobile`, `status`, `user_id_create`, `gmt_create`, `gmt_modified`,
+		  `sex`, `birth`, `pic_id`, `live_address`, `hobby`,
+		  `province`, `city`, `district`)
+		values
+		(#{username}, #{name}, #{password}, #{deptId}, #{email},
+		 #{mobile}, #{status}, #{userIdCreate}, #{gmtCreate}, #{gmtModified},
+		 #{sex}, #{birth}, #{picId}, #{liveAddress}, #{hobby},
+		 #{province}, #{city}, #{district})
+	</insert>
 </mapper>

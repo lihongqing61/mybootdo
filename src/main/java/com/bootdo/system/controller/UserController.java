@@ -1,9 +1,12 @@
 package com.bootdo.system.controller;
 
+import com.bootdo.common.annonation.Log;
 import com.bootdo.common.controller.BaseController;
 import com.bootdo.common.utils.PageUtils;
 import com.bootdo.common.utils.Query;
+import com.bootdo.common.utils.R;
 import com.bootdo.system.domain.RoleDO;
+import com.bootdo.system.domain.UserDO;
 import com.bootdo.system.service.RoleService;
 import com.bootdo.system.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -62,5 +65,35 @@ public class UserController extends BaseController {
         List<RoleDO> roles = roleService.list();
         model.addAttribute("roles", roles);
         return prefix + "add";
+    }
+
+    /**
+     * 校验用户名是否存在 true 不存在 可以使用, false 已存在 不能使用
+     * @param username
+     * @return
+     */
+    @PostMapping("/exit")
+    @ResponseBody
+    public boolean exit(@RequestParam(value = "username") String username) {
+        // false 已存在
+        return !userService.exit(username);
+    }
+
+    /**
+     * 保存用户信息
+     * @param user
+     * @return
+     */
+    @PostMapping("/save")
+    @ResponseBody
+    @Log("保存用户")
+    @RequiresPermissions("sys:user:add")
+    public R save(UserDO user) {
+        int ret = userService.save(user);
+        if (ret > 0) {
+            return R.ok();
+        } else {
+            return R.error();
+        }
     }
 }
