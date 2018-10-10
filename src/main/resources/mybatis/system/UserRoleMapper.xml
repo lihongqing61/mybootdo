@@ -24,4 +24,12 @@
         from sys_user_role
         where user_id = #{val}
     </select>
+
+    <delete id="batchRemoveByUserId">
+        delete from sys_user_role where user_id in
+        <foreach item="id" collection="array" open="(" separator=","
+                 close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

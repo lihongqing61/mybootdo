@@ -103,13 +103,57 @@ public class UserController extends BaseController {
      */
     @GetMapping("/edit/{id}")
     public String toEditPage(Model model, @PathVariable(value = "id") String id) {
-
         UserDO user = userService.findUserById(id);
         model.addAttribute("user", user);
 
         List<RoleDO> roles = roleService.list(id);
-
         model.addAttribute("roles", roles);
         return prefix + "edit";
+    }
+
+    /**
+     * 更新用户
+     * @param user
+     * @return
+     */
+    @RequiresPermissions("sys:user:edit")
+    @PostMapping("/update")
+    @ResponseBody
+    @Log("更新用户")
+    public R update(UserDO user) {
+        int ret = userService.update(user);
+        if (ret > 0) {
+            return R.ok();
+        } else {
+            return R.error();
+        }
+    }
+
+    /**
+     * 删除用户
+     * @return
+     */
+    @RequiresPermissions("sys:user:remove")
+    @PostMapping("/remove/{id}")
+    @ResponseBody
+    @Log("删除用户")
+    public R remove(@PathVariable(value = "id") Long id) {
+        if (userService.remove(id) > 0) {
+            return R.ok();
+        } else {
+            return R.error();
+        }
+    }
+
+    @RequiresPermissions("sys:user:batchRemove")
+    @PostMapping("/batchRemove")
+    @ResponseBody
+    @Log("批量删除用户")
+    public R batchRemove(@RequestParam("userIds[]") String[] userIds) {
+        if (userService.batchRemove(userIds) > 0) {
+            return R.ok();
+        } else {
+            return R.error();
+        }
     }
 }

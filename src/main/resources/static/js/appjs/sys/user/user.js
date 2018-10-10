@@ -134,3 +134,53 @@ function edit(id) {
         content : prefix + '/edit/' + id
     });
 }
+
+/**
+ * 删除用户 单条删除
+ */
+function remove(id) {
+    layer.confirm("确定要删除选中的记录吗?", {btn: ["确定", "取消"]}, function () {
+        $.post(prefix + '/remove/'+id, null, function(r) {
+            if (r.code == 0) {
+                layer.msg(r.msg);
+                reLoad();
+            } else {
+                layer.alert(r.msg);
+            }
+        }, 'json');
+    });
+}
+
+/**
+ * 批量删除用户
+ */
+function batchRemove() {
+    // 返回所有选择的行，当没有选择的记录时，返回一个空数组
+    var row = $("#exampleTable").bootstrapTable("getSelections");
+    if (row.length == 0) {
+        layer.msg("请选择要删除的记录");
+        return;
+    }
+    layer.confirm("您确定要删除选中的"+row.length+"条记录吗", {btn: ["确定", "取消"]}, function () {
+        var ids = new Array();
+        $.each(row, function(i, val) {
+            ids[i] = val["userId"];
+        });
+        $.post(prefix + '/batchRemove/', {"userIds": ids}, function(r) {
+            if (r.code == 0) {
+                layer.msg(r.msg);
+                reLoad();
+            } else {
+                layer.alert(r.msg);
+            }
+        }, 'json');
+    });
+}
+
+/**
+ * 密码重置
+ * @param id
+ */
+function resetPwd(id) {
+
+}

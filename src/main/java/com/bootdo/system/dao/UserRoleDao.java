@@ -14,4 +14,6 @@ public interface UserRoleDao {
     void batchSave(List<UserRoleDO> userRoleList);
 
     List<Long> findRoleByUserId(String id);
+
+    void batchRemoveByUserId(String[] userIds);
 }

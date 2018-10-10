@@ -83,4 +83,37 @@ public class UserServiceImpl implements UserService {
     public UserDO findUserById(String id) {
         return userDao.findUserById(id);
     }
+
+    @Override
+    public int update(UserDO user) {
+        int count = userDao.update(user);
+
+        userRoleDao.removeRoleById(user.getUserId());
+
+        List<UserRoleDO> userRoleList = new ArrayList<>();
+        for (Long roleId : user.getRoleIds()) {
+            UserRoleDO ur = new UserRoleDO();
+            ur.setUserId(user.getUserId());
+            ur.setRoleId(roleId);
+            userRoleList.add(ur);
+        }
+        if (userRoleList.size() > 0) {
+            userRoleDao.batchSave(userRoleList);
+        }
+        return count;
+    }
+
+    @Override
+    public int remove(Long id) {
+        int count = userDao.remove(id);
+        userRoleDao.removeRoleById(id);
+        return count;
+    }
+
+    @Override
+    public int batchRemove(String[] userIds) {
+        int count = userDao.batchRemove(userIds);
+        userRoleDao.batchRemoveByUserId(userIds);
+        return count;
+    }
 }

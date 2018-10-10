@@ -17,4 +17,10 @@ public interface UserService {
     int save(UserDO user);
 
     UserDO findUserById(String id);
+
+    int update(UserDO user);
+
+    int remove(Long id);
+
+    int batchRemove(String[] userIds);
 }
