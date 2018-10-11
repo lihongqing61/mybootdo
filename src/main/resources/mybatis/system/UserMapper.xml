@@ -40,7 +40,9 @@
                 order by user_id desc
             </otherwise>
         </choose>
-        limit #{offset}, #{limit}
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
     </select>
 
     <select id="count" parameterType="com.bootdo.common.utils.Query" resultType="int">
