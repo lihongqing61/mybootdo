@@ -45,4 +45,10 @@
             </if>
         </where>
     </sql>
+
+    <select id="count" resultType="int">
+        select count(*)
+        from sys_role
+        <include refid="list_where"></include>
+    </select>
 </mapper>

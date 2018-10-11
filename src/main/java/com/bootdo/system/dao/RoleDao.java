@@ -1,5 +1,6 @@
 package com.bootdo.system.dao;
 
+import com.bootdo.common.utils.Query;
 import com.bootdo.system.domain.RoleDO;
 import java.util.HashMap;
 import java.util.List;
@@ -11,4 +12,8 @@ import java.util.List;
 public interface RoleDao {
 
     List<RoleDO> list(HashMap map);
+
+    List<RoleDO> listAll(Query query);
+
+    int count(Query query);
 }

@@ -1,7 +1,9 @@
 package com.bootdo.system.service;
 
+import com.bootdo.common.utils.PageUtils;
 import com.bootdo.system.domain.RoleDO;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Lihq on 2018/10/8 9:45
@@ -10,4 +12,6 @@ import java.util.List;
 public interface RoleService {
 
     List<RoleDO> list(String id);
+
+    PageUtils listAll(Map<String, Object> paramMap);
 }

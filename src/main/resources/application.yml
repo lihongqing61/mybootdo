@@ -1,11 +1,19 @@
 server:
   port: 8080
+  session-timeout: 1800
 spring:
   profiles:
     active: dev
   thymeleaf:
     mode: LEGACYHTML5       # 模板模式
     cache: false           # 禁用html缓存
+#  devtools:
+#    restart:
+#      enabled: true
+  cache:
+    type: ehcache
+    ehcache:
+      config: classpath:config/ehcache.xml
 
 mybatis:
   #type-aliases-package: com.bootdo.*.*.domain    # mybatis短名

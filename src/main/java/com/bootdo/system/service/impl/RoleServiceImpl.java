@@ -1,5 +1,7 @@
 package com.bootdo.system.service.impl;
 
+import com.bootdo.common.utils.PageUtils;
+import com.bootdo.common.utils.Query;
 import com.bootdo.system.dao.RoleDao;
 import com.bootdo.system.dao.UserRoleDao;
 import com.bootdo.system.domain.RoleDO;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,5 +43,13 @@ public class RoleServiceImpl implements RoleService {
             }
         }
         return roleList;
+    }
+
+    @Override
+    public PageUtils listAll(Map<String, Object> paramMap) {
+        Query query = new Query(paramMap);
+        List<RoleDO> roleList = roleDao.list(query);
+        int count = roleDao.count(query);
+        return new PageUtils(roleList, count);
     }
 }
