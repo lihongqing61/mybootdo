@@ -51,4 +51,15 @@
         from sys_role
         <include refid="list_where"></include>
     </select>
+
+    <insert id="save" parameterType="com.bootdo.system.domain.RoleDO"
+            useGeneratedKeys="true" keyProperty="roleId">
+		insert into
+		  sys_role
+		(`role_name`, `role_sign`, `remark`, `user_id_create`, `gmt_create`,
+		`gmt_modified`)
+		values
+		(#{roleName}, #{roleSign}, #{remark}, #{userIdCreate}, #{gmtCreate},
+		#{gmtModified})
+	</insert>
 </mapper>

@@ -51,6 +51,7 @@ function loadList() {
     });
 }
 
+
 function add() {
     layer.open({
         type: 2,    // layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）。 若你采用layer.open({type: 1})方式调用，则type为必填项（信息框除外）
@@ -59,5 +60,22 @@ function add() {
         shadeClose: true,   // 点击遮罩关闭层
         area : [ '800px', '520px' ],
         content : prefix + '/add'
+    });
+}
+
+function reLoad() {
+    $("#exampleTable").bootstrapTable("refresh");
+}
+
+/**
+ * 角色修改
+ */
+function edit() {
+    layer.open({
+        type: 2,
+        title: "角色编辑",
+        shadeClose: true,
+        area : [ '800px', '520px' ],
+        content : prefix + '/edit/' + id
     });
 }

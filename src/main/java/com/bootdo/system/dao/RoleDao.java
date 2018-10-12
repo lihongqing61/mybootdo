@@ -16,4 +16,6 @@ public interface RoleDao {
     List<RoleDO> listAll(Query query);
 
     int count(Query query);
+
+    int save(RoleDO role);
 }

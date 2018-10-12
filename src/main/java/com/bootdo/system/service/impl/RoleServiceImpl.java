@@ -3,15 +3,17 @@ package com.bootdo.system.service.impl;
 import com.bootdo.common.utils.PageUtils;
 import com.bootdo.common.utils.Query;
 import com.bootdo.system.dao.RoleDao;
+import com.bootdo.system.dao.RoleMenuDao;
 import com.bootdo.system.dao.UserRoleDao;
 import com.bootdo.system.domain.RoleDO;
+import com.bootdo.system.domain.RoleMenuDO;
 import com.bootdo.system.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * Created by Lihq on 2018/10/8 9:49
@@ -19,6 +21,7 @@ import java.util.Objects;
  */
 
 @Service
+@Transactional
 public class RoleServiceImpl implements RoleService {
 
     @Autowired
@@ -26,6 +29,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private UserRoleDao userRoleDao;
+
+    @Autowired
+    private RoleMenuDao roleMenuDao;
 
     @Override
     public List<RoleDO> list(String id) {
@@ -51,5 +57,31 @@ public class RoleServiceImpl implements RoleService {
         List<RoleDO> roleList = roleDao.list(query);
         int count = roleDao.count(query);
         return new PageUtils(roleList, count);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int save(RoleDO role) {
+        role.setGmtCreate(new Timestamp(System.currentTimeMillis()));
+        int count = roleDao.save(role);
+
+        List<RoleMenuDO> rmList = new ArrayList<>();
+        List<Long> menuIds = role.getMenuIds();
+        for (Long menuId : menuIds) {
+            RoleMenuDO rm = new RoleMenuDO();
+            rm.setRoleId(role.getRoleId());
+            rm.setMenuId(menuId);
+            rmList.add(rm);
+        }
+
+        if (rmList.size() > 0) {
+            roleMenuDao.batchSave(rmList);
+        }
+        return count;
+    }
+
+    @Override
+    public RoleDO findById(String id) {
+        return null;
     }
 }

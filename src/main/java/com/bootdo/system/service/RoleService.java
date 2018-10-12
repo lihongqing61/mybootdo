@@ -14,4 +14,8 @@ public interface RoleService {
     List<RoleDO> list(String id);
 
     PageUtils listAll(Map<String, Object> paramMap);
+
+    int save(RoleDO role);
+
+    RoleDO findById(String id);
 }
