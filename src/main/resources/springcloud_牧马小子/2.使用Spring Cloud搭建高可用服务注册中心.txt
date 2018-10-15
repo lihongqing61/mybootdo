@@ -1,0 +1,107 @@
+
+一	使用Spring Cloud搭建高可用服务注册中心
+	我们需要的，不仅仅是一个服务注册中心而已，而是一个高可用服务注册中心。
+	在Eureka中，我们通过集群来解决这个问题。Eureka Server的高可用实际上就是将自己作为服务向其他服务注册中心注册自己，这样就会形成一组互相注册的服务注册中心，进而实现服务清单的互相同步，达到高可用的效果
+1.	application.yml 文件
+	server:
+	  port: 1111
+	eureka:
+	  instance:
+		hostname: peer1
+	  client:
+		fetch-registry: false
+		register-with-eureka: false
+		service-url:
+		  defaultZone: http://peer2:1112/eureka/,http://peer3:1113/eureka/
+		  
+2.	application-peer2.yml
+	server:
+	  port: 1112
+	eureka:
+	  instance:
+		hostname: peer2
+	  client:
+		fetch-registry: false
+		register-with-eureka: false
+		service-url:
+		  defaultZone: http://peer1:1111/eureka/,http://peer3:1113/eureka/
+		  
+3.	application-peer3.yml
+	server:
+	  port: 1113
+	eureka:
+	  instance:
+		hostname: peer3
+	  client:
+		fetch-registry: false
+		register-with-eureka: false
+		service-url:
+		  defaultZone: http://peer2:1112/eureka/,http://peer1:1111/eureka/
+		  
+	注:
+	(1).在application.yml的配置文件中，让它的service-url指向peer2和peer3和，在peer2的配置文件中让它的service-url指向peer1和peer3
+	(2).为了让peer1和peer2能够被正确的访问到，我们需要在C:\Windows\System32\drivers\etc目录下的hosts文件总添加两行配置，如下:
+	127.0.0.1       peer1
+	127.0.0.1       peer2
+	127.0.0.1       peer3
+	(3).由于peer1和peer2 peer3互相指向对方，实际上我们构建了一个双节点的服务注册中心集群
+	
+二	生成jar文件
+
+三	进入目录 启动项目	
+	java -jar springcloud-eureka-0.0.1-SNAPSHOT.jar
+	java -jar springcloud-eureka-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer2
+	java -jar springcloud-eureka-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer3
+	
+	项目启动好之后 进入后台
+	http://localhost:1111/, http://localhost:1112/, http://localhost:1113/
+	我们可以看到，在peer1的节点的DS replicas我们已经可以看到peer2和 peer3节点了，
+	在peer2的DS replicas中我们也可以看到peer1 peer3节点了，
+	在peer3的DS replicas中我们也可以看到peer1 peer1，peer2
+	OK，如此之后，我们的服务注册中心集群就搭建好了，然后我们可以做一个简单的测试。
+	
+四	测试
+1.	修改上篇博客中提到的springcloud-eureka-provider项目的配置文件 yml文件
+	server:
+	  port: 9090
+	spring:
+	  application:
+		name: springcloud-eureka-provider
+	eureka:
+	  client:
+		service-url:
+		  defaultZone: http://peer1:1111/eureka,http://peer2:1112/eureka,http://peer3:1113/eureka
+		  
+	启动这个项目，启动成功之后我们再去刷新http://localhost:1111和http://localhost:1112, http://localhost:1113 三个页面，我们会发现我的服务提供者在这三个服务注册中心都注册了
+	OK，至此，一个高可用的服务注册中心我们就搭建成功了	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

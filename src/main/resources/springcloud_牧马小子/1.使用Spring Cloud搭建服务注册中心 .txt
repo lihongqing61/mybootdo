@@ -1,0 +1,233 @@
+一	创建服务注册中心
+1.	添加Eureka依赖 pom.xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+
+		<groupId>com.eureka.server</groupId>
+		<artifactId>springcloud-eureka</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<packaging>jar</packaging>
+
+		<name>springcloud-eureka</name>
+		<description>Demo project for Spring Boot</description>
+
+		<parent>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-parent</artifactId>
+			<version>2.0.3.RELEASE</version>
+			<relativePath/> <!-- lookup parent from repository -->
+		</parent>
+
+		<properties>
+			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+			<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+			<java.version>1.8</java.version>
+		</properties>
+
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+			</dependency>
+
+		
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+				<version>2.0.0.RELEASE</version>
+			</dependency>
+		</dependencies>
+
+		<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+	
+2.	启动一个服务注册中心
+	@SpringBootApplication
+	@EnableEurekaServer
+	public class SpringcloudEurekaApplication {
+		public static void main(String[] args) {
+			SpringApplication.run(SpringcloudEurekaApplication.class, args);
+		}
+	}
+	
+3.	配置服务注册中心
+	server:
+	  port: 1111
+	eureka:
+	  instance:
+		hostname: localhost
+	  client:
+		fetch-registry: false
+		register-with-eureka: false
+		service-url:
+		  defaultZone: http://localhost:1111/eureka/
+		  
+	注:
+	(1).server.port=1111表示设置该服务注册中心的端口号
+	(2).eureka.instance.hostname=localhost表示设置该服务注册中心的hostname
+	(3).eureka.client.register-with-eureka=false,由于我们目前创建的应用是一个服务注册中心，而不是普通的应用，默认情况下，这个应用会向注册中心（也是它自己）注册它自己，设置为false表示禁止这种默认行为
+	(4).eureka.client.fetch-registry=false,表示不去检索其他的服务，因为服务注册中心本身的职责就是维护服务实例，它也不需要去检索其他服务
+	
+4.	测试
+	http://localhost:1111
+	如果看到后台管理界面 则表示搭建成功 (本案例是成功的)
+	
+	
+二	注册服务提供者
+1.	添加Eureka依赖 pom.xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+
+		<groupId>com.eureka.server</groupId>
+		<artifactId>springcloud-eureka</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<packaging>jar</packaging>
+
+		<name>springcloud-eureka-provider</name>
+		<description>Demo project for Spring Boot</description>
+
+		<parent>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-parent</artifactId>
+			<version>2.0.5.RELEASE</version>
+			<relativePath/> <!-- lookup parent from repository -->
+		</parent>
+
+		<properties>
+			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+			<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+			<java.version>1.8</java.version>
+		</properties>
+
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+				<version>2.0.0.RELEASE</version>
+			</dependency>
+		</dependencies>
+
+		<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+
+2.	激活Eureka中的EnableEurekaServer
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.autoconfigure.SpringBootApplication;
+	import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+
+	@SpringBootApplication
+	@EnableEurekaServer
+	public class SpringcloudEurekaProviderApplication {
+		public static void main(String[] args) {
+			SpringApplication.run(SpringcloudEurekaProviderApplication.class, args);
+		}
+	}
+		
+3.	配置服务名称和注册中心地址	application.yml		
+	server:
+	  port: 9090
+	spring:
+	  application:
+		name: springcloud-eureka-provider
+	eureka:
+	  client:
+		service-url:
+		  defaultZone: http://localhost:1111/eureka/
+		  
+4.	测试
+	如果出现 SPRINGCLOUD-EUREKA-PROVIDER 表明服务注册成功
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
