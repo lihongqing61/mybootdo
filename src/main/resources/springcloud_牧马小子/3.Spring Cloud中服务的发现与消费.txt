@@ -1,0 +1,216 @@
+一	Spring Cloud中服务的发现与消费
+1.	如何实现
+	服务的发现和消费实际上是两个行为，这两个行为要由不同的对象来完成：服务的发现由Eureka客户端来完成，而服务的消费由Ribbon来完成。
+	Ribbn是一个基于HTTP和TCP的客户端负载均衡器，当我们将Ribbon和Eureka一起使用时，Ribbon会从Eureka注册中心去获取服务端列表，然后进行轮询访问以到达负载均衡的作用，服务端是否在线这些问题则交由Eureka去维护
+	
+2.	开启注册中心
+	这里的服务注册中心我们还是使用上篇文章中创建的eureka-server工程，为了测试方便，我这里直接启动一个单节点工程就OK了
+	
+3.	注册服务
+	注册服务也和上篇文章一样，也使用provider工程，不同的是，这里我将provider工程打成一个jar包，然后用命令启动，启动两个实例，方便我一会观察负载均衡的效果
+	然后通过下面两行命令启动两个服务提供者的实例
+	java -jar provider-0.0.1-SNAPSHOT.jar --server.port=9998  
+	java -jar provider-0.0.1-SNAPSHOT.jar --server.port=9999
+	此时，在服务注册中心我们可以看到有两个服务提供者注册成功了
+	UP (2) - DESKTOP-8PLG398:HELLO-SERVICE:9998 , DESKTOP-8PLG398:HELLO-SERVICE:9999
+	
+4.	开发客户端
+	创建Spring Boot项目 添加Eureka和Ribbon依赖 pom.xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+
+		<groupId>com.springcloud.test</groupId>
+		<artifactId>springcloud-client</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<packaging>jar</packaging>
+
+		<name>springcloud-client</name>
+		<description>Demo project for Spring Boot</description>
+
+		<parent>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-parent</artifactId>
+			<version>2.0.5.RELEASE</version>
+			<relativePath/> <!-- lookup parent from repository -->
+		</parent>
+
+		<properties>
+			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+			<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+			<java.version>1.8</java.version>
+		</properties>
+
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+			</dependency>
+		</dependencies>
+
+		<dependencyManagement>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-dependencies</artifactId>
+					<version>Finchley.SR1</version>
+					<type>pom</type>
+					<scope>import</scope>
+				</dependency>
+			</dependencies>
+		</dependencyManagement>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+
+5.	配置启动入口类
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.autoconfigure.SpringBootApplication;
+	import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+	import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+	import org.springframework.context.annotation.Bean;
+	import org.springframework.web.client.RestTemplate;
+
+	@SpringBootApplication
+	@EnableEurekaClient		// 1.亮明Eureka客户端身份 表示该应用是一个Eureka客户端应用，这样该应用就自动具备了发现服务的能力
+	public class SpringcloudClientApplication {
+
+		public static void main(String[] args) {
+			SpringApplication.run(SpringcloudClientApplication.class, args);
+		}
+
+		// RestTemplate可以帮助我们发起一个GET或者POST请求
+		@Bean
+		@LoadBalanced		// 表示开启客户端负载均衡
+		public RestTemplate restTemplate() {
+			return new RestTemplate();
+		}
+	}
+
+6.	创建Controller
+	@RestController
+	public class SBController {
+
+		@Autowired
+		RestTemplate restTemplate;
+
+		@RequestMapping(value = "/ribbon-consumer",method = RequestMethod.GET)
+		public String helloController() {
+			return restTemplate.getForEntity("http://HELLO-SERVICE/hello", String.class).getBody();
+		}
+	}
+
+7.	application.yml
+	server:
+	  port: 8888
+	spring:
+	  application:
+		name: ribbon-consumer
+	eureka:
+	  client:
+		service-url:
+		  defaultZone: http://peer1:1111/eureka
+		  
+8.	HELLO-SERVICE部分代码
+	server:
+	  port: 9999
+	spring:
+	  application:
+		name: HELLO-SERVICE
+
+	eureka:
+	  client:
+		service-url:
+		  defaultZone: http://peer1:1111/eureka
+
+	注:	使用ribbon实现负载均衡的时候，服务名称不能用下划线，换成中划线
+		  
+	import org.slf4j.Logger;
+	import org.slf4j.LoggerFactory;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.cloud.client.ServiceInstance;
+	import org.springframework.cloud.client.discovery.DiscoveryClient;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RequestMethod;
+	import org.springframework.web.bind.annotation.RestController;
+	import java.util.List;
+
+	@RestController
+	public class HelloController {
+
+		private final Logger logger = LoggerFactory.getLogger(getClass());
+		@Autowired
+		private DiscoveryClient client;
+
+		@RequestMapping(value = "/hello", method = RequestMethod.GET)
+		public String index() {
+			List<ServiceInstance> instances = client.getInstances("HELLO-SERVICE");
+			for (int i = 0; i < instances.size(); i++) {
+				logger.info("==================/hello,host:" + instances.get(i).getHost() + ",service_id:" + instances.get(i).getServiceId());
+			}
+			return "Hello World";
+		}
+	}  
+
+
+9.	启动并测试
+	http://localhost:8888/ribbon-consumer
+	当日志是由端口号为9999和9998的provider打印出来的，说明我们这里的负载均衡已经起作用了
+	Ribbon输出了当前客户端维护的HELLO-SERVICE的服务列表情况，每一个provider的位置都展示出来，Ribbon就是按照这个列表进行轮询，进而实现基于客户端的负载均衡。
+	同时这里的日志还输出了其他信息，比如各个实例的请求总数量，第一次连接信息，上一次连接信息以及总的请求失败数量等
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
